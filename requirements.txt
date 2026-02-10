@@ -10,3 +10,5 @@ beautifulsoup4>=4.12.0
 playwright
 selenium
 undetected-chromedriver
+pytesseract
+pdf2image
