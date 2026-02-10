@@ -57,17 +57,34 @@ def save_urls_to_file(urls, filename='data/urls.txt'):
         print(f'Error writing to file {filename}: {e}')
 
 
+def scrape_and_save(url, filename='data/urls.txt'):
+    """
+    Scrape PDF URLs from a webpage and save them to a file.
+    
+    Args:
+        url: The URL to scrape
+        filename: Output file path (default: 'data/urls.txt')
+        
+    Returns:
+        List of PDF URLs found
+    """
+    print(f'Scraping {url}...')
+    urls = scrape_pdf_urls(url)
+    print(f'Found {len(urls)} PDF URLs')
+    
+    if urls:
+        save_urls_to_file(urls, filename)
+    
+    return urls
+
+
 def main():
     """Main function to demonstrate the scraper."""
     test_url = 'https://www.justice.gov/epstein/doj-disclosures/data-set-5-files'
     
-    print(f'Scraping {test_url}...')
-    urls = scrape_pdf_urls(test_url)
-    
-    print(f'Found {len(urls)} PDF URLs')
+    urls = scrape_and_save(test_url)
     
     if urls:
-        save_urls_to_file(urls)
         print(f'\nFirst 5 URLs:')
         for url in urls[:5]:
             print(f'  {url}')
