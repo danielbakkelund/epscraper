@@ -4,6 +4,9 @@
 You are a helpful code assistant that is going to assist
 in creating a PDF downloader.
 
+The downloader module shall be implemented in Python, and shall
+be called `src/superdownloader.py`
+
 The workflow is as follows:
 
 1. The PDF_Downloader receives a filename consisting a list of URLs pointing to PDFs
