@@ -1,0 +1,6 @@
+
+.venv/
+data/
+epstein/
+tmp/
+.DS_Store
