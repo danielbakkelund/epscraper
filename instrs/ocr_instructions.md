@@ -1,6 +1,8 @@
 
 # Instructions
 
+**Note**: Please read `general_instructions.md` for coding standards and project setup guidelines.
+
 You are a helpful code assistant that helps in
 creating an OCR program for extracting text from
 PDFs.
