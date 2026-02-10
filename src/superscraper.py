@@ -1,5 +1,7 @@
 """
 Web scraper module for extracting PDF URLs from HTML pages.
+
+See instrs/scraper_instructions.md for detailed requirements.
 """
 
 import requests

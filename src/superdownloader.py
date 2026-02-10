@@ -2,6 +2,8 @@
 """
 PDF Downloader for justice.gov Epstein files.
 
+See instrs/downloader_instructions.md for detailed requirements.
+
 This module provides functionality to download PDFs from justice.gov that require
 age verification and CAPTCHA handling. It uses undetected Chrome to bypass bot
 detection and maintains session cookies across multiple downloads.
