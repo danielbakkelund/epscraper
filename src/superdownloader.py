@@ -1,7 +1,25 @@
 #!/usr/bin/env python3
 """
 PDF Downloader for justice.gov Epstein files.
-Handles age verification redirect to download PDFs using undetected Chrome.
+
+This module provides functionality to download PDFs from justice.gov that require
+age verification and CAPTCHA handling. It uses undetected Chrome to bypass bot
+detection and maintains session cookies across multiple downloads.
+
+Public API:
+    download_pdfs(url_files, output_dir="./pdfs", headless=False)
+        Main function to download PDFs from one or more URL files.
+    
+    PDFDownloader(output_dir="./pdfs", headless=False)
+        Context manager class for advanced usage.
+
+Example:
+    >>> from src.superdownloader import download_pdfs
+    >>> count = download_pdfs("urls.txt")
+    >>> count = download_pdfs(["urls1.txt", "urls2.txt"])
+
+Command-line usage:
+    python src/superdownloader.py urls1.txt urls2.txt
 """
 
 import os
@@ -18,6 +36,9 @@ import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
+
+__all__ = ['download_pdfs', 'PDFDownloader']
 
 
 class PDFDownloader:
@@ -176,6 +197,41 @@ class PDFDownloader:
         return success_count
 
 
+def download_pdfs(url_files, output_dir="./pdfs", headless=False):
+    """
+    Download PDFs from one or more URL files.
+    
+    Args:
+        url_files: String path to a single file, or list of file paths
+        output_dir: Directory to save downloaded PDFs (default: "./pdfs")
+        headless: Run browser in headless mode (default: False, experimental)
+    
+    Returns:
+        int: Number of successfully downloaded PDFs
+    
+    Example:
+        >>> from src.superdownloader import download_pdfs
+        >>> download_pdfs("urls.txt")
+        >>> download_pdfs(["urls1.txt", "urls2.txt", "urls3.txt"])
+        >>> download_pdfs(["urls.txt"], output_dir="./my_pdfs")
+    """
+    # Normalize input to list
+    if isinstance(url_files, str):
+        url_files = [url_files]
+    
+    # Validate all files exist
+    for url_file in url_files:
+        if not os.path.exists(url_file):
+            raise FileNotFoundError(f"URL file not found: {url_file}")
+    
+    # Download using context manager
+    with PDFDownloader(output_dir=output_dir, headless=headless) as downloader:
+        if len(url_files) == 1:
+            return downloader.download_from_file(url_files[0])
+        else:
+            return downloader.download_from_multiple_files(url_files)
+
+
 def main():
     if len(sys.argv) < 2:
         print("Usage: python superdownloader.py <url_file> [url_file2 ...] [--headless]")
@@ -202,13 +258,13 @@ def main():
             print(f"Error: File '{url_file}' not found")
             sys.exit(1)
     
-    with PDFDownloader(headless=headless) as downloader:
-        if len(url_files) == 1:
-            success_count = downloader.download_from_file(url_files[0])
-        else:
-            success_count = downloader.download_from_multiple_files(url_files)
-    
-    sys.exit(0 if success_count > 0 else 1)
+    # Use the public API function
+    try:
+        success_count = download_pdfs(url_files, headless=headless)
+        sys.exit(0 if success_count > 0 else 1)
+    except Exception as e:
+        print(f"Fatal error: {e}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
