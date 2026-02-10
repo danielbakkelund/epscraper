@@ -149,25 +149,64 @@ class PDFDownloader:
         
         print(f"Complete: {success_count}/{len(urls)} downloaded successfully")
         return success_count
+    
+    def download_from_multiple_files(self, url_files):
+        """Download all PDFs from multiple files, reusing browser session."""
+        all_urls = []
+        
+        # Collect all URLs from all files
+        for url_file in url_files:
+            print(f"Reading URLs from: {url_file}")
+            with open(url_file, 'r') as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith('#'):
+                        all_urls.append(line)
+        
+        print(f"\nFound {len(all_urls)} total URLs to download\n")
+        
+        success_count = 0
+        for i, url in enumerate(all_urls, 1):
+            print(f"[{i}/{len(all_urls)}]")
+            if self.download_pdf(url):
+                success_count += 1
+            print()
+        
+        print(f"Complete: {success_count}/{len(all_urls)} downloaded successfully")
+        return success_count
 
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python superdownloader.py <url_file> [--headless]")
-        print("  url_file: Text file containing URLs, one per line")
+        print("Usage: python superdownloader.py <url_file> [url_file2 ...] [--headless]")
+        print("  url_file: Text file(s) containing URLs, one per line")
         print("  --headless: Optional flag to run in headless mode (experimental, may not work)")
+        print("\nExamples:")
+        print("  python superdownloader.py urls.txt")
+        print("  python superdownloader.py urls1.txt urls2.txt urls3.txt")
         print("\nNote: By default, the browser runs in visible mode due to Chrome/Selenium limitations.")
+        print("When processing multiple files, you only need to pass the CAPTCHA once at the start.")
         sys.exit(1)
     
-    url_file = sys.argv[1]
-    if not os.path.exists(url_file):
-        print(f"Error: File '{url_file}' not found")
-        sys.exit(1)
-    
+    # Separate file arguments from flags
     headless = "--headless" in sys.argv
+    url_files = [arg for arg in sys.argv[1:] if not arg.startswith('--')]
+    
+    if not url_files:
+        print("Error: No URL files specified")
+        sys.exit(1)
+    
+    # Check all files exist
+    for url_file in url_files:
+        if not os.path.exists(url_file):
+            print(f"Error: File '{url_file}' not found")
+            sys.exit(1)
     
     with PDFDownloader(headless=headless) as downloader:
-        success_count = downloader.download_from_file(url_file)
+        if len(url_files) == 1:
+            success_count = downloader.download_from_file(url_files[0])
+        else:
+            success_count = downloader.download_from_multiple_files(url_files)
     
     sys.exit(0 if success_count > 0 else 1)
 
