@@ -93,23 +93,23 @@ class PDFDownloader:
         try:
             # Navigate to the URL
             self.driver.get(url)
-            time.sleep(3)  # Wait for page to load
+            time.sleep(0.1)  # Wait for page to load
             
             # Check if we're on the age verification page by looking for the button
             try:
-                yes_button = WebDriverWait(self.driver, 10).until(
+                yes_button = WebDriverWait(self.driver, 1).until(
                     EC.presence_of_element_located((By.ID, "age-button-yes"))
                 )
                 print(f"  Age verification required, clicking 'Yes' button...")
                 yes_button.click()
                 
                 # Wait for the page to process the click and set cookies
-                time.sleep(5)
+                time.sleep(0.1)
                 
                 # Navigate to the PDF again
                 print(f"  Accessing PDF...")
                 self.driver.get(url)
-                time.sleep(3)
+                time.sleep(0.1)
                 
             except Exception as e:
                 print(f"  No age verification required (or button not found)")
