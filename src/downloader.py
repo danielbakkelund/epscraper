@@ -14,8 +14,13 @@ from urllib.parse import urljoin, urlparse
 from pathlib import Path
 
 
+def _get_logger(x):
+    import logging
+    return logging.getLogger(__name__ + '.' + x.__name__)
+
+
 class EpsteinFilesDownloader:
-    def __init__(self, output_dir="epstein_files", delay=1.0):
+    def __init__(self, output_dir='data', delay=0.1):
         """
         Initialize the downloader.
 
@@ -23,6 +28,7 @@ class EpsteinFilesDownloader:
             output_dir: Directory to save downloaded PDFs
             delay: Delay between requests in seconds (be respectful to servers)
         """
+        self.log = _get_logger(EpsteinFilesDownloader)
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(exist_ok=True)
         self.delay = delay
@@ -30,6 +36,11 @@ class EpsteinFilesDownloader:
         self.session.headers.update({
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         })
+
+        self.extractor = re.compile(
+            r'^.*<a href="(.*/epstein/files/DataSet[% \d]+/(EFTA[\d]+.pdf))">\2</a>.*$',
+            re.IGNORECASE
+        )
 
     def extract_pdf_links(self, url):
         """
@@ -47,33 +58,24 @@ class EpsteinFilesDownloader:
             response = self.session.get(url, timeout=30)
             response.raise_for_status()
         except requests.RequestException as e:
-            print(f"Error fetching {url}: {e}")
+            self.log.error(f"Error fetching {url}: {e}")
             return []
 
         soup = BeautifulSoup(response.content, 'html.parser')
-        pdf_links = []
+        link_tags = soup.find_all('a', href=re.compile(r'\.pdf$', re.IGNORECASE))
+        print(f'Found {len(link_tags)} <a> tags.')
 
         # Find all links within the specific HTML structure
-        for li in soup.find_all('li'):
-            # Look for the specific structure with views-field class
-            field_div = li.find('div', class_='views-field-title')
-            if field_div:
-                link = field_div.find('a', href=re.compile(r'\.pdf$', re.IGNORECASE))
-                if link:
-                    href = link.get('href')
-                    # Convert relative URLs to absolute
-                    absolute_url = urljoin(url, href)
-                    pdf_links.append(absolute_url)
+        pdf_links = []
+        for li in link_tags:
+            self.log.debug(f"Processing link tag: {li}")
+            m = self.extractor.match(str(li))
+            if m:
+                href = m.group(1)
+                self.log.info(f"Extracted link: {href}")
+                pdf_links.append(href)
 
-        # Also find any PDF links directly (fallback)
-        if not pdf_links:
-            all_links = soup.find_all('a', href=re.compile(r'\.pdf$', re.IGNORECASE))
-            for link in all_links:
-                href = link.get('href')
-                absolute_url = urljoin(url, href)
-                pdf_links.append(absolute_url)
-
-        print(f"Found {len(pdf_links)} PDF links")
+        self.log.info(f"Found {len(pdf_links)} PDF links")
         return pdf_links
 
     def download_pdf(self, pdf_url):
@@ -92,10 +94,10 @@ class EpsteinFilesDownloader:
 
         # Skip if already downloaded
         if filepath.exists():
-            print(f"Already exists: {filename}")
+            self.log.info(f"Already exists: {filename}")
             return filepath
 
-        print(f"Downloading: {filename}")
+        self.log.info(f"Downloading: {filename}")
 
         try:
             response = self.session.get(pdf_url, timeout=60, stream=True)
@@ -106,11 +108,11 @@ class EpsteinFilesDownloader:
                 for chunk in response.iter_content(chunk_size=8192):
                     f.write(chunk)
 
-            print(f"Saved: {filename}")
+            self.log.debug(f"Saved: {filename}")
             return filepath
 
         except requests.RequestException as e:
-            print(f"Error downloading {filename}: {e}")
+            self.log.error(f"Error downloading {filename}: {e}")
             # Clean up partial download
             if filepath.exists():
                 filepath.unlink()
@@ -164,6 +166,10 @@ def main():
     """
     Example usage of the downloader.
     """
+    import logging
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+
     # Example URLs - replace with your actual list
     urls = [
         'https://www.justice.gov/epstein/doj-disclosures/data-set-1-files',
@@ -178,6 +184,10 @@ def main():
     print('Starting download process...')
     print(f'Output directory: {downloader.output_dir.absolute()}')
     print('-' * 60)
+
+    #downloader.extract_pdf_links(urls[0])  # Test extraction on the first URL
+    #exit(0)
+
 
     # Download from all URLs
     stats = downloader.download_from_urls(urls)
