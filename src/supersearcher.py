@@ -113,7 +113,8 @@ class PDFSearcher:
             
             # Click search button
             search_button = self.driver.find_element(By.ID, 'searchButton')
-            search_button.click()
+            # Use JavaScript click to avoid interception issues
+            self.driver.execute_script('arguments[0].click();', search_button)
             
             # Wait for results to load
             print('Waiting for search results to load...')
