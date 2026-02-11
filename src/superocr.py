@@ -50,6 +50,8 @@ def process_pdf(pdf_path, output_dir, language='eng'):
     logger.info(f'Processing {pdf_file.name}...')
 
     try:
+        # Log before starting conversion to identify hangs
+        logger.info(f'Starting OCR conversion for {pdf_file.name}')
         # Extract text using OCR
         text = get_text_from_pdf(str(pdf_path), language)
 
