@@ -237,12 +237,14 @@ class PDFSearcher:
             print(f'Error clicking next page: {e}')
             return False
     
-    def search_and_extract(self, search_string):
+    def search_and_extract(self, search_string, start_page=1, end_page=None):
         """
         Perform search and extract all PDF URLs across all pages.
         
         Args:
             search_string: The search query
+            start_page: First page to extract from (default: 1)
+            end_page: Last page to extract from (default: None, meaning all pages)
             
         Returns:
             List of all PDF URLs found
@@ -260,13 +262,28 @@ class PDFSearcher:
         # Perform the search
         self.perform_search(search_string)
         
-        # Extract URLs from first page
+        # Navigate to start page
         page_num = 1
+        
+        # Skip pages before start_page
+        while page_num < start_page and self.has_next_page():
+            print(f'Skipping page {page_num}...')
+            if not self.click_next_page():
+                print(f'Could not reach page {start_page}')
+                return all_urls
+            page_num += 1
+        
+        # Extract URLs from start page
+        print(f'Extracting from page {page_num}...')
         urls = self.extract_pdf_urls()
         all_urls.extend(urls)
         
         # Check for additional pages
         while self.has_next_page():
+            # Stop if we've reached the end page
+            if end_page is not None and page_num >= end_page:
+                break
+            
             page_num += 1
             print(f'\nMoving to page {page_num}...')
             
@@ -301,7 +318,7 @@ def save_urls_to_file(urls, filename):
         print(f'Error writing to file {filename}: {e}')
 
 
-def search_pdfs(search_string, output_file=None, headless=False):
+def search_pdfs(search_string, output_file=None, headless=False, start_page=1, end_page=None):
     """
     Search for PDFs and extract URLs.
     
@@ -310,6 +327,8 @@ def search_pdfs(search_string, output_file=None, headless=False):
         output_file: Optional output file path. If not provided, uses
                     'data/<search_string>_urls.txt' with spaces replaced by underscores
         headless: Run browser in headless mode (default: False)
+        start_page: First page to extract from (default: 1)
+        end_page: Last page to extract from (default: None, meaning all pages)
     
     Returns:
         List of PDF URLs found
@@ -318,6 +337,7 @@ def search_pdfs(search_string, output_file=None, headless=False):
         >>> from supersearcher import search_pdfs
         >>> urls = search_pdfs('flight logs')
         >>> urls = search_pdfs('black book', 'data/custom_urls.txt')
+        >>> urls = search_pdfs('email', start_page=10, end_page=20)
     """
     # Generate default output filename if not provided
     if output_file is None:
@@ -325,10 +345,14 @@ def search_pdfs(search_string, output_file=None, headless=False):
         output_file = f'data/{safe_search_string}_urls.txt'
     
     print(f'Search query: "{search_string}"')
-    print(f'Output file: {output_file}\n')
+    print(f'Output file: {output_file}')
+    if start_page > 1 or end_page is not None:
+        page_range = f'{start_page}-{end_page if end_page else "end"}'
+        print(f'Page range: {page_range}')
+    print()
     
     with PDFSearcher(headless=headless) as searcher:
-        urls = searcher.search_and_extract(search_string)
+        urls = searcher.search_and_extract(search_string, start_page, end_page)
         
         if urls:
             save_urls_to_file(urls, output_file)
@@ -340,12 +364,14 @@ def search_pdfs(search_string, output_file=None, headless=False):
 
 def main():
     if len(sys.argv) < 2 or sys.argv[1] in ['--help', '-h', 'help']:
-        print('Usage: python supersearcher.py <search_string> [--output <file>] [--headless]')
-        print('  search_string: The search query (use quotes for multi-word queries)')
-        print('  --output: Optional output file path (default: data/<search_string>_urls.txt)')
-        print('  --headless: Optional flag to run in headless mode')
+        print('Usage: python supersearcher.py <search_string> [OPTIONS]')
+        print('\nOptions:')
+        print('  --output FILE      Output file path (default: data/<search_string>_urls.txt)')
+        print('  --pages START END  Extract pages START to END (inclusive, default: all pages)')
+        print('  --headless         Run in headless mode')
         print('\nExamples:')
         print('  python supersearcher.py "flight logs"')
+        print('  python supersearcher.py "email" --pages 10 20')
         print('  python supersearcher.py "black book" --output data/blackbook.txt')
         sys.exit(0 if len(sys.argv) > 1 else 1)
     
@@ -353,6 +379,8 @@ def main():
     search_string = sys.argv[1]
     output_file = None
     headless = '--headless' in sys.argv
+    start_page = 1
+    end_page = None
     
     # Check for custom output file
     if '--output' in sys.argv:
@@ -363,8 +391,21 @@ def main():
             print('Error: --output flag requires a filename')
             sys.exit(1)
     
+    # Check for page range
+    if '--pages' in sys.argv:
+        try:
+            pages_index = sys.argv.index('--pages')
+            start_page = int(sys.argv[pages_index + 1])
+            end_page = int(sys.argv[pages_index + 2])
+            if start_page < 1 or end_page < start_page:
+                print('Error: Invalid page range. START must be >= 1 and END must be >= START')
+                sys.exit(1)
+        except (ValueError, IndexError):
+            print('Error: --pages flag requires two integers (START END)')
+            sys.exit(1)
+    
     try:
-        urls = search_pdfs(search_string, output_file, headless)
+        urls = search_pdfs(search_string, output_file, headless, start_page, end_page)
         sys.exit(0 if urls else 1)
     except Exception as e:
         print(f'Fatal error: {e}')

@@ -18,7 +18,7 @@ from supersearcher import search_pdfs
 from superdownloader import download_pdfs
 
 
-def search_and_download(search_string, output_dir='./pdfs', url_file=None, headless=False):
+def search_and_download(search_string, output_dir='./pdfs', url_file=None, headless=False, start_page=1, end_page=None):
     """
     Search for PDFs and download them.
 
@@ -27,6 +27,8 @@ def search_and_download(search_string, output_dir='./pdfs', url_file=None, headl
         output_dir: Directory to save downloaded PDFs (default: './pdfs')
         url_file: Optional custom path for URL file. If None, uses default naming
         headless: Run browsers in headless mode (default: False)
+        start_page: First page to extract from (default: 1)
+        end_page: Last page to extract from (default: None, meaning all pages)
 
     Returns:
         tuple: (number of URLs found, number of PDFs downloaded)
@@ -36,7 +38,8 @@ def search_and_download(search_string, output_dir='./pdfs', url_file=None, headl
     print('=' * 70)
 
     # Search and extract URLs
-    urls = search_pdfs(search_string, output_file=url_file, headless=headless)
+    urls = search_pdfs(search_string, output_file=url_file, headless=headless, 
+                      start_page=start_page, end_page=end_page)
 
     if not urls:
         print('\nNo URLs found. Nothing to download.')
@@ -72,9 +75,11 @@ def main():
         print('\nOptions:')
         print('  --output-dir DIR   Directory to save PDFs (default: ./pdfs)')
         print('  --url-file FILE    Custom path for URL file (default: data/<search>_urls.txt)')
+        print('  --pages START END  Extract pages START to END (inclusive, default: all pages)')
         print('  --headless         Run browsers in headless mode (experimental)')
         print('\nExamples:')
         print('  python search_and_download.py "flight logs"')
+        print('  python search_and_download.py "email" --pages 10 20')
         print('  python search_and_download.py "black book" --output-dir pdfs/blackbook')
         print('  python search_and_download.py "documents" --url-file data/docs.txt')
         sys.exit(0 if len(sys.argv) > 1 else 1)
@@ -84,6 +89,8 @@ def main():
     output_dir = './pdfs'
     url_file = None
     headless = '--headless' in sys.argv
+    start_page = 1
+    end_page = None
 
     # Check for output directory option
     if '--output-dir' in sys.argv:
@@ -103,12 +110,27 @@ def main():
             print('Error: --url-file requires a file path')
             sys.exit(1)
 
+    # Check for page range
+    if '--pages' in sys.argv:
+        try:
+            pages_index = sys.argv.index('--pages')
+            start_page = int(sys.argv[pages_index + 1])
+            end_page = int(sys.argv[pages_index + 2])
+            if start_page < 1 or end_page < start_page:
+                print('Error: Invalid page range. START must be >= 1 and END must be >= START')
+                sys.exit(1)
+        except (ValueError, IndexError):
+            print('Error: --pages flag requires two integers (START END)')
+            sys.exit(1)
+
     try:
         urls_found, pdfs_downloaded = search_and_download(
             search_string,
             output_dir=output_dir,
             url_file=url_file,
-            headless=headless
+            headless=headless,
+            start_page=start_page,
+            end_page=end_page
         )
         sys.exit(0 if pdfs_downloaded > 0 else 1)
     except Exception as e:
