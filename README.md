@@ -38,12 +38,25 @@ sudo apt-get install tesseract-ocr poppler-utils
    cd epstein
    ```
 
-2. **Install Python dependencies**
+2. **Create and activate a virtual environment (recommended)**
+   ```bash
+   # Create virtual environment
+   python -m venv venv
+   
+   # Activate it
+   # On macOS/Linux:
+   source venv/bin/activate
+   
+   # On Windows:
+   venv\Scripts\activate
+   ```
+
+3. **Install Python dependencies**
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Verify installation**
+4. **Verify installation**
    ```bash
    python -c "import pytesseract; print('OCR ready')"
    ```
