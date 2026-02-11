@@ -2,6 +2,52 @@
 
 Command-line tools for searching, downloading, and extracting text from PDFs on justice.gov/epstein.
 
+## Installation
+
+### Prerequisites
+
+**Required:**
+- Python 3.8 or higher
+- Google Chrome browser
+- Tesseract OCR
+- Poppler (for PDF processing)
+
+**Install system dependencies:**
+
+**macOS:**
+```bash
+brew install tesseract poppler
+```
+
+**Ubuntu/Debian:**
+```bash
+sudo apt-get update
+sudo apt-get install tesseract-ocr poppler-utils
+```
+
+**Windows:**
+- Download Tesseract from: https://github.com/UB-Mannheim/tesseract/wiki
+- Download Poppler from: https://github.com/oschwartz10612/poppler-windows/releases/
+- Add both to your PATH environment variable
+
+### Setup
+
+1. **Clone or download this repository**
+   ```bash
+   git clone <repository-url>
+   cd epstein
+   ```
+
+2. **Install Python dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Verify installation**
+   ```bash
+   python -c "import pytesseract; print('OCR ready')"
+   ```
+
 ## Quick Start
 
 ### 1. Search and Download PDFs
@@ -71,13 +117,20 @@ ls texts/
 - **Already processed** files are automatically skipped by OCR
 - **Empty/image-only** PDFs are marked as "empty file"
 
-## Installation
+## Troubleshooting
 
-```bash
-pip install -r requirements.txt
-```
+**"Tesseract not found" error:**
+- Ensure Tesseract is installed and in your PATH
+- On macOS: `which tesseract` should show the installation path
+- On Windows: Add Tesseract installation directory to PATH
 
-Requires Chrome browser and Tesseract OCR to be installed on your system.
+**Chrome driver issues:**
+- The tool uses `undetected-chromedriver` which auto-downloads drivers
+- Ensure Chrome browser is up to date
+
+**PDF processing errors:**
+- Verify Poppler is installed: `pdftoppm -v`
+- On macOS: `brew install poppler`
 
 ## More Documentation
 
