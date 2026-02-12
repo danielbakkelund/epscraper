@@ -5,8 +5,10 @@ Search, download, and extract text from PDFs on justice.gov/epstein.
 ## Install
 
 ```bash
-pip install epstein-files
+pip install git+https://github.com/<username>/<repository>.git
 ```
+
+Replace `<username>/<repository>` with the actual GitHub repository path.
 
 ## Quick Start
 
@@ -18,7 +20,7 @@ epstein-search "flight logs"
 epstein-ocr
 ```
 
-## Requirements
+## System Requirements
 
 - Python 3.8+
 - Google Chrome
@@ -39,11 +41,7 @@ sudo apt-get install tesseract-ocr poppler-utils
 # Poppler: https://github.com/oschwartz10612/poppler-windows/releases/
 ```
 
-## Install from Source
 
-```bash
-pip install git+https://github.com/<username>/<repository>.git
-```
 
 ## Usage
 
