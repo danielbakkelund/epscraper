@@ -1,11 +1,11 @@
-# Epstein Files
+# Epstein Files Scraper
 
 Search, download, and extract text from PDFs on justice.gov/epstein.
 
 ## Install
 
 ```bash
-pip install git+https://github.com/danielbakkelund/epstein.git
+pip install git+https://github.com/danielbakkelund/epscraper.git
 ```
 
 ## Quick Start
