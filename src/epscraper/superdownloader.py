@@ -89,6 +89,12 @@ class PDFDownloader:
         filename = self.extract_filename(url)
         output_path = self.output_dir / filename
         
+        # Check if file already exists
+        if output_path.exists():
+            print(f"Skipping (already exists): {url}")
+            print(f"  -> {output_path}")
+            return True
+        
         print(f"Downloading: {url}")
         print(f"  -> {output_path}")
         
