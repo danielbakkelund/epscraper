@@ -54,7 +54,7 @@ epstein-ocr --pdf-dir pdfs --output-dir texts --cores 10
 ### Python API
 
 ```python
-from epscrape import search_and_download, process_all_pdfs
+from epscraper import search_and_download, process_all_pdfs
 
 # Download PDFs
 search_and_download("flight logs", output_dir="pdfs")

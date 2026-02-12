@@ -14,8 +14,8 @@ Usage:
 import sys
 import os
 
-from epscrape.supersearcher import search_pdfs
-from epscrape.superdownloader import download_pdfs
+from epscraper.supersearcher import search_pdfs
+from epscraper.superdownloader import download_pdfs
 
 
 def search_and_download(search_string, output_dir='./pdfs', url_file=None, headless=False, start_page=1, end_page=None):

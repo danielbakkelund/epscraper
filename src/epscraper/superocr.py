@@ -17,7 +17,7 @@ import os
 import logging
 from pathlib import Path
 from concurrent.futures import ProcessPoolExecutor, as_completed
-from epscrape.ocr import get_text_from_pdf
+from epscraper.ocr import get_text_from_pdf
 
 # Setup logging
 logging.basicConfig(

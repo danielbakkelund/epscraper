@@ -57,11 +57,11 @@ Repository = "https://github.com/danielbakkelund/epstein"
 Issues = "https://github.com/danielbakkelund/epstein/issues"
 
 [project.scripts]
-epstein-search = "epscrape.search_and_download:main"
-epstein-ocr = "epscrape.superocr:main"
+epstein-search = "epscraper.search_and_download:main"
+epstein-ocr = "epscraper.superocr:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-epscrape = ["*.md"]
+epscraper = ["*.md"]
