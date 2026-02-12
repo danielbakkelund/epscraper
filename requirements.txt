@@ -12,3 +12,5 @@ selenium
 undetected-chromedriver
 pytesseract
 pdf2image
+
+setuptools
