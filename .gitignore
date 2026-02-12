@@ -1,8 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
 
+# Virtual environments
+venv/
 .venv/
-data/
-epstein/
-tmp/
+ENV/
+env/
 
-*.pyc
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Project specific
+pdfs/
+pdfs_*/
+texts/
+texts_*/
+data/*.txt
+*.pdf
+html/
+
+# OS
 .DS_Store
+Thumbs.db

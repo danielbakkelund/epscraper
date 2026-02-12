@@ -14,8 +14,8 @@ Usage:
 import sys
 import os
 
-from supersearcher import search_pdfs
-from superdownloader import download_pdfs
+from epscraper.supersearcher import search_pdfs
+from epscraper.superdownloader import download_pdfs
 
 
 def search_and_download(search_string, output_dir='./pdfs', url_file=None, headless=False, start_page=1, end_page=None):
@@ -71,17 +71,18 @@ def search_and_download(search_string, output_dir='./pdfs', url_file=None, headl
 
 def main():
     if len(sys.argv) < 2 or sys.argv[1] in ['--help', '-h', 'help']:
-        print('Usage: python search_and_download.py <search_string> [OPTIONS]')
+        print('Usage: python search_and_download.py <search_string> --pages <START END|all> [OPTIONS]')
+        print('\nRequired:')
+        print('  --pages START END  Extract pages START to END (inclusive)')
+        print('  --pages all        Extract all pages')
         print('\nOptions:')
         print('  --output-dir DIR   Directory to save PDFs (default: ./pdfs)')
         print('  --url-file FILE    Custom path for URL file (default: data/<search>_urls.txt)')
-        print('  --pages START END  Extract pages START to END (inclusive, default: all pages)')
         print('  --headless         Run browsers in headless mode (experimental)')
         print('\nExamples:')
-        print('  python search_and_download.py "flight logs"')
+        print('  python search_and_download.py "flight logs" --pages all')
         print('  python search_and_download.py "email" --pages 10 20')
-        print('  python search_and_download.py "black book" --output-dir pdfs/blackbook')
-        print('  python search_and_download.py "documents" --url-file data/docs.txt')
+        print('  python search_and_download.py "black book" --pages all --output-dir pdfs/blackbook')
         sys.exit(0 if len(sys.argv) > 1 else 1)
 
     # Parse arguments
@@ -110,18 +111,27 @@ def main():
             print('Error: --url-file requires a file path')
             sys.exit(1)
 
-    # Check for page range
-    if '--pages' in sys.argv:
-        try:
-            pages_index = sys.argv.index('--pages')
-            start_page = int(sys.argv[pages_index + 1])
+    # Check for page range (REQUIRED)
+    if '--pages' not in sys.argv:
+        print('Error: --pages is required. Use "--pages all" or "--pages START END"')
+        sys.exit(1)
+    
+    try:
+        pages_index = sys.argv.index('--pages')
+        pages_arg = sys.argv[pages_index + 1]
+        
+        if pages_arg.lower() == 'all':
+            start_page = 1
+            end_page = None
+        else:
+            start_page = int(pages_arg)
             end_page = int(sys.argv[pages_index + 2])
             if start_page < 1 or end_page < start_page:
                 print('Error: Invalid page range. START must be >= 1 and END must be >= START')
                 sys.exit(1)
-        except (ValueError, IndexError):
-            print('Error: --pages flag requires two integers (START END)')
-            sys.exit(1)
+    except (ValueError, IndexError):
+        print('Error: --pages requires either "all" or two integers (START END)')
+        sys.exit(1)
 
     try:
         urls_found, pdfs_downloaded = search_and_download(
