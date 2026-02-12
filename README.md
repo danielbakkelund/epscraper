@@ -2,7 +2,19 @@
 
 Command-line tools for searching, downloading, and extracting text from PDFs on justice.gov/epstein.
 
-## Installation
+## Quick Install
+
+```bash
+pip install epstein-files
+```
+
+After installation, use the CLI commands:
+```bash
+epstein-search "flight logs"
+epstein-ocr
+```
+
+## Installation from Source
 
 ### Prerequisites
 
@@ -51,36 +63,36 @@ sudo apt-get install tesseract-ocr poppler-utils
    venv\Scripts\activate
    ```
 
-3. **Install Python dependencies**
+3. **Install the package**
    ```bash
-   pip install -r requirements.txt
+   pip install -e .
    ```
-
-4. **Set PYTHONPATH** (required for importing the package)
-   ```bash
-   # On macOS/Linux:
-   export PYTHONPATH="${PYTHONPATH}:$(pwd)/src"
    
-   # On Windows:
-   set PYTHONPATH=%PYTHONPATH%;%CD%\src
-   ```
+   This installs the package in editable mode along with all dependencies.
 
-5. **Verify installation**
+4. **Verify installation**
    ```bash
    python -c "import pytesseract; print('OCR ready')"
    python -c "from epscrape import search_and_download, process_all_pdfs; print('Package ready')"
+   epstein-search --help
+   epstein-ocr --help
    ```
 
 ## Quick Start
 
 ### 1. Search and Download PDFs
 
-**Command-line:**
+**Using CLI command:**
 ```bash
-python3 -m epscrape.search_and_download "flight logs" --pages <start> <end>
+epstein-search "flight logs"
 ```
 
-**Or use as a Python package:**
+**Or with Python module:**
+```bash
+python3 -m epscrape.search_and_download "flight logs"
+```
+
+**Or as a Python package:**
 ```python
 from epscrape import search_and_download
 
@@ -92,26 +104,31 @@ Downloads PDFs matching your search to `pdfs/` directory and saves URLs to `data
 **Options:**
 ```bash
 # Custom output directory
-python3 -m epscrape.search_and_download "black book" --output-dir pdfs/blackbook
+epstein-search "black book" --output-dir pdfs/blackbook
 
 # Extract specific page range (pages 10-20)
-python3 -m epscrape.search_and_download "email" --pages 10 20
+epstein-search "email" --pages 10 20
 
 # Custom URL file location
-python3 -m epscrape.search_and_download "documents" --url-file data/custom.txt
+epstein-search "documents" --url-file data/custom.txt
 
 # Headless mode (experimental)
-python3 -m epscrape.search_and_download "term" --headless
+epstein-search "term" --headless
 ```
 
 ### 2. Extract Text from PDFs (OCR)
 
-**Command-line:**
+**Using CLI command:**
+```bash
+epstein-ocr
+```
+
+**Or with Python module:**
 ```bash
 python3 -m epscrape.superocr
 ```
 
-**Or use as a Python package:**
+**Or as a Python package:**
 ```python
 from epscrape import process_all_pdfs
 
@@ -123,16 +140,16 @@ Processes all PDFs in `pdfs/` directory and saves extracted text to `texts/` dir
 **Options:**
 ```bash
 # Custom directories
-python3 -m epscrape.superocr --pdf-dir my_pdfs --output-dir my_texts
+epstein-ocr --pdf-dir my_pdfs --output-dir my_texts
 
 # Use more CPU cores (faster processing)
-python3 -m epscrape.superocr --cores 10
+epstein-ocr --cores 10
 
 # Different language (e.g., Spanish)
-python3 -m epscrape.superocr --language spa
+epstein-ocr --language spa
 
 # Verbose logging
-python3 -m epscrape.superocr --verbose
+epstein-ocr --verbose
 ```
 
 ## Usage as Python Package
@@ -163,7 +180,19 @@ stats = process_all_pdfs(
 
 ## Typical Workflow
 
-**Command-line:**
+**Using CLI commands:**
+```bash
+# 1. Search and download PDFs
+epstein-search "flight logs"
+
+# 2. Extract text from downloaded PDFs
+epstein-ocr
+
+# 3. Text files are now in texts/ directory
+ls texts/
+```
+
+**Using Python module:**
 ```bash
 # 1. Search and download PDFs
 python3 -m epscrape.search_and_download "flight logs"
