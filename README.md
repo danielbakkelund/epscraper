@@ -2,6 +2,8 @@
 
 Search, download, and extract text from PDFs on justice.gov/epstein.
 
+> **⚠️ Disclaimer:** This code has never been inspected by humans. Use at your own risk.
+
 ## Install
 
 ```bash
