@@ -11,10 +11,7 @@ pip install git+https://github.com/danielbakkelund/epstein.git
 ## Quick Start
 
 ```bash
-# Search and download PDFs
-epstein-search "flight logs"
-
-# Extract text with OCR
+epstein-search "flight logs" --pages all
 epstein-ocr
 ```
 
@@ -47,7 +44,8 @@ sudo apt-get install tesseract-ocr poppler-utils
 
 ```bash
 # Search and download
-epstein-search "flight logs" --output-dir pdfs --pages 10 20
+epstein-search "flight logs" --pages all
+epstein-search "email" --pages 10 20
 
 # Extract text
 epstein-ocr --pdf-dir pdfs --output-dir texts --cores 10
@@ -68,11 +66,11 @@ process_all_pdfs(pdf_dir="pdfs", output_dir="texts", num_cores=5)
 ## Options
 
 **search_and_download:**
-- `search_string` - Search term
+- `search_string` - Search term (required)
+- `--pages` - Page range: "all" or "START END" (required)
 - `output_dir` - PDF output directory (default: "pdfs")
 - `url_file` - Save URLs to file (default: auto-generated)
 - `headless` - Run browser headless (default: False)
-- `start_page`, `end_page` - Page range to extract
 
 **process_all_pdfs:**
 - `pdf_dir` - Input PDF directory (default: "pdfs")
