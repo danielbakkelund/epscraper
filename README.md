@@ -90,3 +90,7 @@ process_all_pdfs(pdf_dir="pdfs", output_dir="texts", num_cores=5)
 - **Tesseract not found**: Ensure it's in PATH (`which tesseract` on macOS/Linux)
 - **Chrome driver issues**: Update Chrome browser (driver auto-downloads)
 - **PDF errors**: Verify Poppler is installed (`pdftoppm -v`)
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.
