@@ -25,8 +25,8 @@ import sys
 import os
 from pathlib import Path
 
-from superscraper import scrape_pdf_urls
-from superdownloader import download_pdfs
+from epscrape.superscraper import scrape_pdf_urls
+from epscrape.superdownloader import download_pdfs
 
 
 def load_downloaded_datasets(filename='data/downloaded.txt'):
