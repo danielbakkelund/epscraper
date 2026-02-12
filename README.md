@@ -77,7 +77,7 @@ sudo apt-get install tesseract-ocr poppler-utils
 
 **Command-line:**
 ```bash
-python src/epscrape/search_and_download.py "flight logs" --pages <start> <end>
+python3 -m epscrape.search_and_download "flight logs" --pages <start> <end>
 ```
 
 **Or use as a Python package:**
@@ -92,23 +92,23 @@ Downloads PDFs matching your search to `pdfs/` directory and saves URLs to `data
 **Options:**
 ```bash
 # Custom output directory
-python src/epscrape/search_and_download.py "black book" --output-dir pdfs/blackbook
+python3 -m epscrape.search_and_download "black book" --output-dir pdfs/blackbook
 
 # Extract specific page range (pages 10-20)
-python src/epscrape/search_and_download.py "email" --pages 10 20
+python3 -m epscrape.search_and_download "email" --pages 10 20
 
 # Custom URL file location
-python src/epscrape/search_and_download.py "documents" --url-file data/custom.txt
+python3 -m epscrape.search_and_download "documents" --url-file data/custom.txt
 
 # Headless mode (experimental)
-python src/epscrape/search_and_download.py "term" --headless
+python3 -m epscrape.search_and_download "term" --headless
 ```
 
 ### 2. Extract Text from PDFs (OCR)
 
 **Command-line:**
 ```bash
-python src/epscrape/superocr.py
+python3 -m epscrape.superocr
 ```
 
 **Or use as a Python package:**
@@ -123,16 +123,16 @@ Processes all PDFs in `pdfs/` directory and saves extracted text to `texts/` dir
 **Options:**
 ```bash
 # Custom directories
-python src/epscrape/superocr.py --pdf-dir my_pdfs --output-dir my_texts
+python3 -m epscrape.superocr --pdf-dir my_pdfs --output-dir my_texts
 
 # Use more CPU cores (faster processing)
-python src/epscrape/superocr.py --cores 10
+python3 -m epscrape.superocr --cores 10
 
 # Different language (e.g., Spanish)
-python src/epscrape/superocr.py --language spa
+python3 -m epscrape.superocr --language spa
 
 # Verbose logging
-python src/epscrape/superocr.py --verbose
+python3 -m epscrape.superocr --verbose
 ```
 
 ## Usage as Python Package
@@ -166,10 +166,10 @@ stats = process_all_pdfs(
 **Command-line:**
 ```bash
 # 1. Search and download PDFs
-python src/epscrape/search_and_download.py "flight logs"
+python3 -m epscrape.search_and_download "flight logs"
 
 # 2. Extract text from downloaded PDFs
-python src/epscrape/superocr.py
+python3 -m epscrape.superocr
 
 # 3. Text files are now in texts/ directory
 ls texts/
