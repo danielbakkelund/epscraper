@@ -5,10 +5,8 @@ Search, download, and extract text from PDFs on justice.gov/epstein.
 ## Install
 
 ```bash
-pip install git+https://github.com/<username>/<repository>.git
+pip install git+https://github.com/danielbakkelund/epstein.git
 ```
-
-Replace `<username>/<repository>` with the actual GitHub repository path.
 
 ## Quick Start
 
